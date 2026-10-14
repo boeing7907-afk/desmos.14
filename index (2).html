@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5847a6">
+  <meta name="description" content="Browse and play games on Desmos.12.">
+  <title>Desmos.12 — Game Home</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --purple: #5847a6;
+      --purple-deep: #4d3b99;
+      --dot-large: rgba(255,255,255,.12);
+      --dot-small: rgba(255,255,255,.075);
+      --nav-text: #fff;
+      --card-shadow: 0 5px 12px rgba(25, 17, 65, .28);
+      --ink: #151326;
+      --muted: #66617a;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background-color: var(--purple);
+      background-image:
+        radial-gradient(circle, var(--dot-large) 5.5px, transparent 6px),
+        radial-gradient(circle, var(--dot-small) 3px, transparent 3.6px),
+        linear-gradient(135deg, rgba(255,255,255,.025), rgba(31,17,94,.045));
+      background-position: 0 0, 12px 12px, 0 0;
+      background-size: 48px 48px, 24px 24px, 100% 100%;
+      background-attachment: fixed;
+    }
+    body.alt-theme {
+      --purple: #29304f;
+      --purple-deep: #202640;
+      --dot-large: rgba(255,255,255,.09);
+      --dot-small: rgba(255,255,255,.05);
+    }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+    .topbar { width: 100%; min-height: 43px; }
+    .nav {
+      width: min(1235px, calc(100% - 32px));
+      min-height: 43px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 3px 10px 4px;
+      background: #fff;
+      border-radius: 10px;
+      color: #111;
+      font-weight: 850;
+      font-size: clamp(.95rem, 1.45vw, 1.25rem);
+      letter-spacing: -.035em;
+      white-space: nowrap;
+      box-shadow: 0 2px 0 rgba(0,0,0,.08);
+    }
+    .nav-items {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 1;
+      min-width: 0;
+      gap: clamp(10px, 1.65vw, 28px);
+    }
+    .nav-link, .appearance {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 7px 0;
+      border: 0;
+      color: var(--nav-text);
+      background: transparent;
+      font-weight: 650;
+      font-size: clamp(.78rem, 1vw, .97rem);
+      white-space: nowrap;
+      opacity: .98;
+      text-shadow: 0 1px 2px rgba(20,10,70,.12);
+    }
+    .nav-link:hover, .appearance:hover { opacity: .78; }
+    .nav-icon { font-size: .94em; line-height: 1; }
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      flex: 0 1 208px;
+      min-width: 155px;
+      height: 35px;
+      padding: 0 8px 0 11px;
+      border-radius: 5px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,.12);
+    }
+    .search-wrap input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      padding: 0;
+      color: #2f2a3d;
+      background: transparent;
+      font-size: .86rem;
+    }
+    .search-wrap input::placeholder { color: #6e6a79; opacity: 1; }
+    .search-symbol { flex: 0 0 auto; color: #111; font-size: 20px; font-weight: 800; transform: rotate(-18deg); }
+    main { width: 100%; }
+    .home-content {
+      width: min(1235px, calc(100% - 32px));
+      margin: 0 auto;
+      padding-top: clamp(165px, 36.5vh, 307px);
+      padding-bottom: 48px;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, 121px);
+      justify-content: center;
+      align-items: start;
+      gap: 18px;
+      width: 100%;
+    }
+    .game-card {
+      position: relative;
+      display: block;
+      width: 121px;
+      height: 121px;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 12px;
+      background: #dedbea;
+      box-shadow: var(--card-shadow);
+      isolation: isolate;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .game-card:hover, .game-card:focus-visible {
+      transform: translateY(-4px) scale(1.025);
+      box-shadow: 0 11px 22px rgba(22,12,60,.36);
+    }
+    .game-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      background: linear-gradient(135deg, #32b9e8, #f5d56d 60%, #f08b6b);
+      z-index: -1;
+    }
+    .game-label {
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      bottom: 6px;
+      min-height: 21px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 4px;
+      border-radius: 3px;
+      background: rgba(255,255,255,.91);
+      color: #191623;
+      font-size: 11px;
+      line-height: 1.15;
+      font-weight: 800;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: none;
+    }
+    .empty-state {
+      grid-column: 1 / -1;
+      color: #fff;
+      text-align: center;
+      padding: 28px 12px;
+      font-weight: 650;
+      text-shadow: 0 1px 3px rgba(0,0,0,.15);
+    }
+    .player-view {
+      display: none;
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      color: #fff;
+    }
+    .player-view.active { display: block; }
+    .player-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 0 0 13px;
+      flex-wrap: wrap;
+    }
+    .player-head h1 { margin: 0; font-size: clamp(1.3rem, 3vw, 2rem); }
+    .player-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+    .player-btn {
+      padding: 9px 13px;
+      border: 0;
+      border-radius: 6px;
+      color: #222035;
+      background: #fff;
+      font-weight: 750;
+      font-size: .88rem;
+    }
+    .player-btn:hover { background: #eae6ff; }
+    .player-frame-wrap {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      min-height: 350px;
+      max-height: 72vh;
+      overflow: hidden;
+      background: #151322;
+      border-radius: 10px;
+      box-shadow: 0 8px 28px rgba(24,12,71,.3);
+    }
+    .player-frame-wrap iframe { width: 100%; height: 100%; display: block; border: 0; background: #151322; }
+    .player-note { font-size: .88rem; line-height: 1.5; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 20;
+      max-width: calc(100% - 28px);
+      padding: 11px 15px;
+      border-radius: 8px;
+      background: rgba(25,21,48,.94);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      font-size: .9rem;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 1050px) {
+      .nav { flex-wrap: wrap; padding: 6px 0; }
+      .nav-items { gap: 14px; }
+      .search-wrap { flex-basis: 175px; }
+    }
+    @media (max-width: 760px) {
+      .nav { align-items: flex-start; }
+      .brand { margin-top: 1px; }
+      .nav-items { flex-basis: 100%; justify-content: flex-start; flex-wrap: wrap; order: 3; gap: 8px 18px; }
+      .search-wrap { flex: 1 1 200px; }
+      .nav-link, .appearance { font-size: .82rem; }
+      .home-content { padding-top: 18vh; }
+      .games-grid { grid-template-columns: repeat(auto-fit, 108px); gap: 13px; }
+      .game-card { width: 108px; height: 108px; border-radius: 10px; }
+      .player-frame-wrap { min-height: 270px; aspect-ratio: 4 / 3; max-height: none; }
+    }
+    @media (max-width: 420px) {
+      .nav { width: calc(100% - 22px); }
+      .home-content { width: calc(100% - 22px); padding-top: 13vh; }
+      .games-grid { grid-template-columns: repeat(auto-fit, 100px); gap: 12px; }
+      .game-card { width: 100px; height: 100px; }
+      .nav-items { gap: 7px 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#home" class="brand" aria-label="Desmos.12 home">Desmos.12</a>
+      <div class="nav-items">
+        <button type="button" class="appearance" id="appearanceButton"><span aria-hidden="true">◉</span> Appearance Setting</button>
+        <a class="nav-link" href="#home" id="homeLink"><span class="nav-icon" aria-hidden="true">⌂</span> Home</a>
+        <button type="button" class="nav-link reserve-link" data-reserve="1"><span class="nav-icon" aria-hidden="true">♧</span> Reserve 1</button>
+        <button type="button" class="nav-link reserve-link" data-reserve="2"><span class="nav-icon" aria-hidden="true">♧</span> Reserve 2</button>
+        <button type="button" class="nav-link reserve-link" data-reserve="3"><span class="nav-icon" aria-hidden="true">♧</span> Reserve 3</button>
+        <label class="search-wrap" aria-label="Search games">
+          <input id="gameSearch" type="search" placeholder="Search Lesson :)" autocomplete="off">
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+        </label>
+      </div>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section class="home-content" aria-label="Game library">
+      <div class="games-grid" id="gamesGrid">
+        <button class="game-card" type="button" data-name="YoHoHoHo.io" data-url="https://geography-test-5x.org/lessons/lesson-1" aria-label="Play YoHoHoHo.io">
+          <img src="https://geography-test-5x.org/lessons-img/lesson-1.webp" alt="" loading="eager">
+          <span class="game-label">YoHoHoHo.io</span>
+        </button>
+        <button class="game-card" type="button" data-name="Moto X3M" data-url="https://geography-test-5x.org/lessons/lesson-119" aria-label="Play Moto X3M">
+          <img src="https://geography-test-5x.org/lessons-img/lesson-119.webp" alt="" loading="lazy">
+          <span class="game-label">Moto X3M</span>
+        </button>
+        <div class="empty-state" id="emptyState" hidden>No games match that search.</div>
+      </div>
+
+      <section class="player-view" id="playerView" aria-label="Game player">
+        <div class="player-head">
+          <h1 id="playerTitle">Game</h1>
+          <div class="player-actions">
+            <button type="button" class="player-btn" id="backButton">← Back to home</button>
+            <a class="player-btn" id="openGameLink" href="#" target="_blank" rel="noopener noreferrer">Open game ↗</a>
+          </div>
+        </div>
+        <div class="player-frame-wrap">
+          <iframe id="gameFrame" title="Browser game" allow="fullscreen; autoplay; gamepad" allowfullscreen loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="player-note">If the game doesn't load here, use <strong>Open game</strong> to launch it in a new tab. Some game hosts block embedded playback.</p>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const search = document.getElementById('gameSearch');
+      const grid = document.getElementById('gamesGrid');
+      const emptyState = document.getElementById('emptyState');
+      const cards = Array.from(document.querySelectorAll('.game-card'));
+      const playerView = document.getElementById('playerView');
+      const playerTitle = document.getElementById('playerTitle');
+      const gameFrame = document.getElementById('gameFrame');
+      const openGameLink = document.getElementById('openGameLink');
+      const toast = document.getElementById('toast');
+      let toastTimeout;
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('show'), 2300);
+      }
+
+      function filterGames() {
+        const term = search.value.trim().toLowerCase();
+        let shown = 0;
+        cards.forEach(card => {
+          const matches = card.dataset.name.toLowerCase().includes(term);
+          card.hidden = !matches;
+          if (matches) shown++;
+        });
+        emptyState.hidden = shown !== 0;
+      }
+      search.addEventListener('input', filterGames);
+
+      function openGame(card) {
+        const name = card.dataset.name;
+        const url = card.dataset.url;
+        playerTitle.textContent = name;
+        gameFrame.title = name + ' browser game';
+        gameFrame.src = url;
+        openGameLink.href = url;
+        grid.style.display = 'none';
+        playerView.classList.add('active');
+        search.value = '';
+        history.replaceState(null, '', '#play-' + encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]+/g, '-')));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function goHome() {
+        gameFrame.src = 'about:blank';
+        playerView.classList.remove('active');
+        grid.style.display = 'grid';
+        search.value = '';
+        filterGames();
+        history.replaceState(null, '', '#home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      cards.forEach(card => card.addEventListener('click', () => openGame(card)));
+      document.getElementById('backButton').addEventListener('click', goHome);
+      document.getElementById('homeLink').addEventListener('click', event => {
+        event.preventDefault();
+        goHome();
+      });
+      document.querySelector('.brand').addEventListener('click', event => {
+        event.preventDefault();
+        goHome();
+      });
+      document.getElementById('appearanceButton').addEventListener('click', () => {
+        document.body.classList.toggle('alt-theme');
+        showToast(document.body.classList.contains('alt-theme') ? 'Night appearance enabled.' : 'Purple appearance enabled.');
+      });
+      document.querySelectorAll('.reserve-link').forEach(button => {
+        button.addEventListener('click', () => showToast('Reserve ' + button.dataset.reserve + ' is saved for a future game.'));
+      });
+    })();
+  </script>
+</body>
+</html>
